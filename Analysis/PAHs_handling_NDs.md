@@ -141,8 +141,8 @@ duplicate samples, we calculate average values.
 
 In addition, the following reads in data and assigns the value of the
 reporting limit to data that was below that limit. Since we retain a
-flag value indicating which observation we treates this way, this does
-NOT imply that teh detection limit is the most approapriate estimate of
+flag value indicating which observation we treated this way, this does
+NOT imply that the detection limit is the most appropriate estimate of
 the (unobserved) left censored value.
 
 We handle censored values in more detail, below.
@@ -317,7 +317,7 @@ We want to focus on analysis of the sum of PAHs, because all PAHs are
 highly correlated. The question is, how do we best handle the
 non-detects. Often in environmental analyses, non-detects are replaced
 by zero, by the detection limit, or by half the detection limit, but
-none of those conventions rests on strong statistical principals. We
+none of those conventions rests on strong statistical principles. We
 instead implement a method that estimates the (unobserved) value of
 non-detects using a conditional mean of censored observations derived
 from a maximum likelihood procedure.
