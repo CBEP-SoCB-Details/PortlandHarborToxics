@@ -4,7 +4,7 @@ Received in e-mail from Michael Johnson of Stantec, dated February 4, 2020.
 Data originally collected by Glenn Daukas of Campbell Environmental
 
 ## Cite Report as Follows:
->Cambell Environmental Group, Inc. 2019.  Bulk Chemistry Dredge Sediment Sampling
+>Campbell Environmental Group, Inc. 2019.  Bulk Chemistry Dredge Sediment Sampling
 and Harbor Assessment Report, Portland Harbor, Portland and South Portland,
 Maine. Report Prepared For Portland Harbor Commission, Maine Trade Center, Suite 105,
 Portland Fish Pier, Portland, ME 04101.
@@ -20,7 +20,7 @@ Feb 13, 2020. "PORTLAND_VB_TARGET_LOCATIONS.csv"
 
 # Other  Information
 ## Screening Values
-We found a plethora of potential screenign values in  NOAA's SQuiRT Cards 
+We found a plethora of potential screening values in  NOAA's SQuiRT Cards 
 (Screening Quick Reference Tables), which are available multiple places on-line 
 including here: https://repository.library.noaa.gov/view/noaa/9327
 
