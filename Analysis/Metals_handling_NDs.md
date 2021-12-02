@@ -244,7 +244,7 @@ fn= "Marine_Sediment_Screening_Values_simplified.xlsx"
 
 ## Convert to a look-up table
 
-Now, I convert the SQIRTS data to a look-up table, by converting the
+Now, I convert the SQUIRTS data to a look-up table, by converting the
 Chemical column to row names. While this is discouraged in the
 tidyverse, it is slightly more convenient to implement a look-up this
 way. Note that all this accomplishes is to slightly simplify how I
