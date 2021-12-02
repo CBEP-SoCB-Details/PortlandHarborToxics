@@ -418,7 +418,7 @@ plt
 
 ![](PCBs_handling_NDs_2_files/figure-gfm/distribution_graphic-1.png)<!-- -->
 So, the bulk of our data lies in censored values, which themselves
-varied from site to site. higher, There is far too little data here to
+varied from site to site. Higher, There is far too little data here to
 determine a distribution for these data, but a lognormal or Gamma
 distribution are both likely, give the constraint that values can not be
 lower than zero. Here we use a lognormal distribution, largely for its
