@@ -1,6 +1,6 @@
 # Processing to Produce Working Versions of data
 *  'Working Data.xls' is just a copy of "draft_Combined_data_20190917.xls" as
-'assembled by Stantec.
+assembled by Stantec.
 
 *  'Marine Sediment Screening Values simplified.xlsx' is just a version of the
 screening values, with unrelated screening levels removed and screening levels
@@ -24,8 +24,8 @@ The list of PCB congeners and alternate terminology from here:
 (https://www.epa.gov/pcbs/table-polychlorinated-biphenyl-pcb-congeners). The table
 was copied and pasted into Word from a PDF available at that web site. This
 table was used to cross-correlate nomenclature, although as we ended up only
-reporting Total PCBs, nemenclature does not matter all that much. 
+reporting Total PCBs, nomenclature does not matter all that much. 
 
 # GIS Files
-'Portand_Dredge_Locations.mxd' COntains ArcGIS map file.
-Shapefile 'Portland Toxics Locations' Derived from the 
+'Portand_Dredge_Locations.mxd' Contains ArcGIS map file.
+Shapefile 'Portland Toxics Locations' Derived from the NEED TO INSERT WHERE THIS WAS DERIVED FROM
