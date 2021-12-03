@@ -3,31 +3,33 @@ Exploratory analysis of Sediment Toxicity Data : PCBs
 Curtis C. Bohlen, Casco Bay Estuary Partnership
 7/16/2020
 
-  - [Install Libraries](#install-libraries)
-  - [Load Contaminants Data](#load-contaminants-data)
-      - [PCB Terminology](#pcb-terminology)
-      - [Chemical Parameters.](#chemical-parameters.)
-      - [Extract PCBs Data Only](#extract-pcbs-data-only)
-      - [Question about Reporting
+-   [Install Libraries](#install-libraries)
+-   [Load Contaminants Data](#load-contaminants-data)
+    -   [PCB Terminology](#pcb-terminology)
+    -   [Chemical Parameters.](#chemical-parameters)
+    -   [Extract PCBs Data Only](#extract-pcbs-data-only)
+    -   [Question about Reporting
         Limits](#question-about-reporting-limits)
-      - [Create PCB Data](#create-pcb-data)
-      - [A Problem](#a-problem)
-      - [Final Data Set](#final-data-set)
-  - [Exploratory Graphics](#exploratory-graphics)
-      - [PCBs by Site](#pcbs-by-site)
-      - [Sites by PCBs](#sites-by-pcbs)
-  - [Correlations](#correlations)
-  - [Analysis of Non Detects](#analysis-of-non-detects)
-      - [Distributional graphics](#distributional-graphics)
-  - [Alternate Estimates of Sum of
+    -   [Create PCB Data](#create-pcb-data)
+    -   [A Problem](#a-problem)
+    -   [Final Data Set](#final-data-set)
+-   [Exploratory Graphics](#exploratory-graphics)
+    -   [PCBs by Site](#pcbs-by-site)
+    -   [Sites by PCBs](#sites-by-pcbs)
+-   [Correlations](#correlations)
+-   [Analysis of Non Detects](#analysis-of-non-detects)
+    -   [Distributional graphics](#distributional-graphics)
+-   [Alternate Estimates of Sum of
     PCBs](#alternate-estimates-of-sum-of-pcbs)
-      - [Alternate Estimates of Sum of
+    -   [Alternate Estimates of Sum of
         PAHs](#alternate-estimates-of-sum-of-pahs)
-      - [Applying to the PCBs Data](#applying-to-the-pcbs-data)
-      - [Implications of Alternate Treatment of
+    -   [Applying to the PCBs Data](#applying-to-the-pcbs-data)
+    -   [Implications of Alternate Treatment of
         NDs](#implications-of-alternate-treatment-of-nds)
-  - [Check Consistency](#check-consistency)
-  - [Conclusion](#conclusion)
+-   [Check Consistency](#check-consistency)
+-   [Impact of Selection of ND Method on
+    Conclusions](#impact-of-selection-of-nd-method-on-conclusions)
+-   [Conclusion](#conclusion)
 
 <img
   src="https://www.cascobayestuary.org/wp-content/uploads/2014/04/logo_sm.jpg"
@@ -40,20 +42,32 @@ library(readxl)
 library(tidyverse)
 ```
 
-    ## -- Attaching packages --------------------------------------------- tidyverse 1.3.0 --
+    ## Warning: package 'tidyverse' was built under R version 4.0.5
 
-    ## v ggplot2 3.3.2     v purrr   0.3.4
-    ## v tibble  3.0.3     v dplyr   1.0.0
-    ## v tidyr   1.1.0     v stringr 1.4.0
-    ## v readr   1.3.1     v forcats 0.5.0
+    ## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
 
-    ## -- Conflicts ------------------------------------------------ tidyverse_conflicts() --
+    ## v ggplot2 3.3.5     v purrr   0.3.4
+    ## v tibble  3.1.6     v dplyr   1.0.7
+    ## v tidyr   1.1.4     v stringr 1.4.0
+    ## v readr   2.1.0     v forcats 0.5.1
+
+    ## Warning: package 'ggplot2' was built under R version 4.0.5
+
+    ## Warning: package 'tidyr' was built under R version 4.0.5
+
+    ## Warning: package 'dplyr' was built under R version 4.0.5
+
+    ## Warning: package 'forcats' was built under R version 4.0.5
+
+    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
 ``` r
 library(GGally)
 ```
+
+    ## Warning: package 'GGally' was built under R version 4.0.5
 
     ## Registered S3 method overwritten by 'GGally':
     ##   method from   
@@ -62,6 +76,8 @@ library(GGally)
 ``` r
 library(maxLik)
 ```
+
+    ## Warning: package 'maxLik' was built under R version 4.0.5
 
     ## Loading required package: miscTools
 
@@ -82,12 +98,14 @@ library(LCensMeans)
 # Load Contaminants Data
 
 ``` r
-sibfldnm <- 'Derived_Data'
+sibfldnm <- 'Original_Data'
+niecefldnm <- 'Final_Data_Transmittal'
 parent <- dirname(getwd())
-sibling <- paste(parent,sibfldnm, sep = '/')
-fn <- 'working_data.xls'
+niece = file.path(parent,sibfldnm, niecefldnm)
 
-the_data <- read_excel(paste(sibling,fn, sep='/'), 
+fn <- "draft_Combined_data_20190917.xls"
+
+the_data <- read_excel(paste(niece, fn, sep='/'), 
     sheet = "Combined", col_types = c("skip", 
         "text", "skip", "skip", "skip", 
         "skip", "skip", "skip", "skip", 
@@ -98,9 +116,12 @@ the_data <- read_excel(paste(sibling,fn, sep='/'),
         "numeric", "numeric", "skip", "skip", 
         "skip", "skip", "skip", "skip", 
         "skip")) %>%
-  mutate(SAMPLE_ID = factor(SAMPLE_ID, levels = c("CSP-1", "CSP-2", "CSP-3", "CSP-4", "CSP-5", "CSP-6",
-                                                  "CSP-7", "CSP-7D", "CSP-8", "CSP-9", "CSP-10", "CSP-11",
-                                                  "CSP-12", "CSS-13", "CSP-14", "CSS-15")))
+  mutate(SAMPLE_ID = factor(SAMPLE_ID, levels = c("CSP-1", "CSP-2", "CSP-3", 
+                                                  "CSP-4", "CSP-5", "CSP-6",
+                                                  "CSP-7", "CSP-7D", "CSP-8", 
+                                                  "CSP-9", "CSP-10", "CSP-11",
+                                                  "CSP-12", "CSS-13", "CSP-14", 
+                                                  "CSS-15")))
 ```
 
 ## PCB Terminology
@@ -110,9 +131,11 @@ the same compounds referred to in multiple ways. We can cross-correlate
 by CAS numbers as follows:
 
 ``` r
+sibfldnm <- 'Derived_Data'
+sib = file.path(parent,sibfldnm)
 fn <- 'PCB_nomenclature.xlsx'
 
-pcbnames <- read_excel(file.path(sibling, fn)) %>%
+pcbnames <- read_excel(file.path(sib, fn)) %>%
   mutate(CAS_NO = gsub('-', '', CASRN))
 
 the_data %>%
@@ -120,14 +143,15 @@ the_data %>%
   summarize(CAS_NO = first(CAS_NO), .groups = 'drop') %>%
   filter(grepl(pattern='CL', x=PARAMETER_NAME)) %>%
   mutate(name = pcbnames$`IUPAC Name`[match(CAS_NO, pcbnames$CAS_NO)]) %>%
-  mutate(congener = pcbnames$`Congener Number`[match(CAS_NO, pcbnames$CAS_NO)]) %>%
+  mutate(congener = pcbnames$`Congener Number`[match(CAS_NO, 
+                                                     pcbnames$CAS_NO)]) %>%
   arrange(congener) %>%
   knitr::kable(col.names = c('PCB Name', 'CAS No.',
                              'Chemical', 'Congener No.') ,align = 'l')
 ```
 
 | PCB Name     | CAS No.  | Chemical                                 | Congener No. |
-| :----------- | :------- | :--------------------------------------- | :----------- |
+|:-------------|:---------|:-----------------------------------------|:-------------|
 | CL2-BZ\#8    | 34883437 | 2,4’-Dichlorobiphenyl                    | 8            |
 | CL3-BZ\#18   | 37680652 | 2,2’,5-Trichlorobiphenyl                 | 18           |
 | CL3-BZ\#28   | 7012375  | 2,4,4’-Trichlorobiphenyl                 | 28           |
@@ -272,7 +296,7 @@ plt
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
-![](PCBs_handling_NDs_2_files/figure-gfm/show_problem-1.png)<!-- -->
+![](PCBs_handling_NDs_files/figure-gfm/show_problem-1.png)<!-- -->
 
 ``` r
 rm(tmp)
@@ -329,11 +353,11 @@ plt <- ggplot(PCBs_data_long, aes(SAMPLE_ID, CONCENTRATION)) +
 plt
 ```
 
-![](PCBs_handling_NDs_2_files/figure-gfm/pcbs_by_site-1.png)<!-- -->
+![](PCBs_handling_NDs_files/figure-gfm/pcbs_by_site-1.png)<!-- -->
 
 ## Sites by PCBs
 
-``` rsites_by_pcbs
+``` r
 plt <- ggplot(PCBs_data_long, aes(PCB, CONCENTRATION)) +
   geom_col(aes(fill = SAMPLE_ID, color = censored>0), lwd = 1) +
   scale_color_manual(values = c('black', 'yellow'), name = 'Censored') +
@@ -346,7 +370,8 @@ plt <- ggplot(PCBs_data_long, aes(PCB, CONCENTRATION)) +
 plt
 ```
 
-So, the mix of PCBs varies plot to plot quite a bit. Most non-detects
+![](PCBs_handling_NDs_files/figure-gfm/sites_by_pcbs-1.png)<!-- --> So,
+the mix of PCBs varies plot to plot quite a bit. Most non-detects
 happened at a handful of sites, where they tended to happen for multiple
 PCBs.
 
@@ -370,7 +395,7 @@ PCBs_data_long %>%
 ```
 
 |              | CL10-BZ\#209 | CL2-BZ\#8 | CL3-BZ\#18 | CL3-BZ\#28 | CL4-BZ\#44 | CL4-BZ\#49 | CL4-BZ\#52 | CL4-BZ\#66 | CL5-BZ\#101 | CL5-BZ\#105 | CL5-BZ\#118 | CL5-BZ\#87 | CL6-BZ\#128 | CL6-BZ\#138 | CL6-BZ\#153 | CL7-BZ\#170 | CL7-BZ\#180 | CL7-BZ\#183 | CL7-BZ\#184 | CL7-BZ\#187 | CL8-BZ\#195 | CL9-BZ\#206 |
-| :----------- | -----------: | --------: | ---------: | ---------: | ---------: | ---------: | ---------: | ---------: | ----------: | ----------: | ----------: | ---------: | ----------: | ----------: | ----------: | ----------: | ----------: | ----------: | ----------: | ----------: | ----------: | ----------: |
+|:-------------|-------------:|----------:|-----------:|-----------:|-----------:|-----------:|-----------:|-----------:|------------:|------------:|------------:|-----------:|------------:|------------:|------------:|------------:|------------:|------------:|------------:|------------:|------------:|------------:|
 | CL10-BZ\#209 |         1.00 |      0.69 |       0.69 |       0.75 |       0.66 |       0.69 |       0.64 |       0.58 |        0.76 |        0.73 |        0.95 |       0.64 |        0.77 |        0.87 |        0.89 |        0.78 |        0.95 |        0.91 |        0.75 |        0.94 |        0.69 |        0.99 |
 | CL2-BZ\#8    |         0.69 |      1.00 |       1.00 |       0.95 |       0.90 |       1.00 |       0.60 |       0.92 |        0.84 |        0.98 |        0.68 |       0.91 |        0.73 |        0.64 |        0.72 |        0.91 |        0.75 |        0.74 |        0.95 |        0.78 |        1.00 |        0.67 |
 | CL3-BZ\#18   |         0.69 |      1.00 |       1.00 |       0.95 |       0.90 |       1.00 |       0.60 |       0.92 |        0.84 |        0.98 |        0.68 |       0.91 |        0.73 |        0.64 |        0.72 |        0.91 |        0.75 |        0.74 |        0.95 |        0.78 |        1.00 |        0.67 |
@@ -416,13 +441,12 @@ plt <- ggplot(PCBs_data_long, aes(PCB, CONCENTRATION)) +
 plt
 ```
 
-![](PCBs_handling_NDs_2_files/figure-gfm/distribution_graphic-1.png)<!-- -->
+![](PCBs_handling_NDs_files/figure-gfm/distribution_graphic-1.png)<!-- -->
 So, the bulk of our data lies in censored values, which themselves
-varied from site to site. higher, There is far too little data here to
-determine a distribution for these data, but a lognormal or Gamma
-distribution are both likely, give the constraint that values can not be
-lower than zero. Here we use a lognormal distribution, largely for its
-simplicity.
+varied from site to site. There is far too little data here to determine
+a distribution for these data, but a lognormal or Gamma distribution are
+both likely, give the constraint that values can not be lower than zero.
+Here we use a lognormal distribution, largely for its simplicity.
 
 # Alternate Estimates of Sum of PCBs
 
@@ -430,7 +454,8 @@ simplicity.
 
 We want to focus on analysis of the sum of PCBs, because all PCBs are
 highly correlated, and the SQUIRT tables provide screening criteria for
-the sum of PCBs.  
+the sum of PCBs.
+
 The question is, how do we best handle the non-detects. Often in
 environmental analyses, non-detects are replaced by zero, by the
 detection limit, or by half the detection limit, but none of those
@@ -468,7 +493,7 @@ same results, you need to set the random number seed with set.seed()
 ``` r
 dat2 <- PCBs_data_long %>%
   group_by(PCB) %>%
-  mutate(LikCensored = sub_conditional_means(CONCENTRATION, censored>0)) %>%
+  mutate(LikCensored = sub_cmeans(CONCENTRATION, censored>0)) %>%
   mutate(HalfDL = ifelse(censored>0, CONCENTRATION/2, CONCENTRATION)) %>%
   ungroup()
 
@@ -492,15 +517,15 @@ ggplot(dat2, aes(CONCENTRATION,LikCensored)) +
   scale_color_manual(values = cbep_colors2(), name = 'Censored')
 ```
 
-![](PCBs_handling_NDs_2_files/figure-gfm/NDs_graphic-1.png)<!-- --> The
+![](PCBs_handling_NDs_files/figure-gfm/NDs_graphic-1.png)<!-- --> The
 first panel shows the essentially meaningless variation for a parameter
 with no detections, but variable detection limits. Note that the
-“corrected” estimates are all small and only vary in the fourth
-decimal place, well below differences that can possibly matter. In
-general, that is the pattern we observe - -chemicals with large numbers
-of non-detects tend to be present in low concentrations, even in sites
-where they were detected. This the non-detects have relatively little
-effect on estimates of total PCBs.
+“corrected” estimates are all small and only vary in the fourth decimal
+place, well below differences that can possibly matter. In general, that
+is the pattern we observe – chemicals with large numbers of non-detects
+tend to be present in low concentrations, even in sites where they were
+detected. Thus the non-detects have relatively little effect on
+estimates of total PCBs.
 
 # Check Consistency
 
@@ -510,33 +535,35 @@ so let’s calculate directly for one PCB, and compare results.
 ``` r
 PCBs_data_long %>%
   filter(PCB=='CL9-BZ#206') %>%
-  mutate(LikCensored = sub_conditional_means(CONCENTRATION, censored>0)) %>%
+  mutate(LikCensored = sub_cmeans(CONCENTRATION, censored>0)) %>%
   select(LikCensored) %>%
   mutate(test = dat2[dat2$PCB=='CL9-BZ#206',]$LikCensored) %>%
   knitr::kable(digits = 3)
 ```
 
 | LikCensored |  test |
-| ----------: | ----: |
-|       0.220 | 0.209 |
-|       0.278 | 0.285 |
-|       0.286 | 0.273 |
+|------------:|------:|
+|       0.215 | 0.212 |
+|       0.282 | 0.279 |
+|       0.273 | 0.290 |
 |       4.220 | 4.220 |
 |       7.300 | 7.300 |
-|       0.337 | 0.323 |
+|       0.346 | 0.321 |
 |       9.080 | 9.080 |
 |       6.690 | 6.690 |
 |       3.500 | 3.500 |
-|       0.220 | 0.221 |
+|       0.217 | 0.222 |
 |       2.550 | 2.550 |
-|       0.268 | 0.265 |
-|       0.365 | 0.328 |
-|       0.237 | 0.242 |
-|       0.238 | 0.245 |
+|       0.269 | 0.277 |
+|       0.350 | 0.331 |
+|       0.252 | 0.247 |
+|       0.237 | 0.250 |
 
 So, results are not quite identical, but close enough (usually under 1%)
 so that the differences are almost surely due to the random sampling
-strategy used. \# Impact of Selection of ND Method on Conclusions
+strategy used.
+
+# Impact of Selection of ND Method on Conclusions
 
 ``` r
 ggplot(res2, aes(x=totPCB))+
@@ -555,7 +582,7 @@ ggplot(res2, aes(x=totPCB))+
   theme_cbep()
 ```
 
-![](PCBs_handling_NDs_2_files/figure-gfm/does_handling_of_nds_matter-1.png)<!-- -->
+![](PCBs_handling_NDs_files/figure-gfm/does_handling_of_nds_matter-1.png)<!-- -->
 As expected, the maximum likelihood estimator is regularly lower than
 the “half of detection limit” method for these cases, where non-detects
 were frequent.

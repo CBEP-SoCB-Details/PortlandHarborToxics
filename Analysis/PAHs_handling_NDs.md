@@ -3,25 +3,25 @@ Exploratory analysis of Sediment Toxicity Data : PAHs
 Curtis C. Bohlen, Casco Bay Estuary Partnership
 7/16/2020
 
-  - [Install Libraries](#install-libraries)
-  - [Load Data](#load-data)
-      - [List Chemical Parameters](#list-chemical-parameters)
-      - [Extract PAH Data](#extract-pah-data)
-  - [Exploratory Analysis](#exploratory-analysis)
-      - [Pairs Plot](#pairs-plot)
-      - [Check for Non-detects](#check-for-non-detects)
-      - [Parralel Coordinates Plot](#parralel-coordinates-plot)
-      - [Alternate Graphic](#alternate-graphic)
-      - [Correlations](#correlations)
-  - [Analysis of Non Detects](#analysis-of-non-detects)
-      - [Distribution Graphic showing
+-   [Install Libraries](#install-libraries)
+-   [Load Data](#load-data)
+    -   [List Chemical Parameters](#list-chemical-parameters)
+    -   [Extract PAH Data](#extract-pah-data)
+-   [Exploratory Analysis](#exploratory-analysis)
+    -   [Pairs Plot](#pairs-plot)
+    -   [Check for Non-detects](#check-for-non-detects)
+    -   [Parralel Coordinates Plot](#parralel-coordinates-plot)
+    -   [Alternate Graphic](#alternate-graphic)
+    -   [Correlations](#correlations)
+-   [Analysis of Non Detects](#analysis-of-non-detects)
+    -   [Distribution Graphic showing
         NDs](#distribution-graphic-showing-nds)
-      - [Alternate Estimates of Sum of
+    -   [Alternate Estimates of Sum of
         PAHs](#alternate-estimates-of-sum-of-pahs)
-      - [Applying to the PAHs data](#applying-to-the-pahs-data)
-  - [Graphic Showing ND Handling](#graphic-showing-nd-handling)
-  - [Total PAHs](#total-pahs)
-      - [Graphic Comparing ND Methods](#graphic-comparing-nd-methods)
+    -   [Applying to the PAHs data](#applying-to-the-pahs-data)
+-   [Graphic Showing ND Handling](#graphic-showing-nd-handling)
+-   [Total PAHs](#total-pahs)
+    -   [Graphic Comparing ND Methods](#graphic-comparing-nd-methods)
 
 <img
   src="https://www.cascobayestuary.org/wp-content/uploads/2014/04/logo_sm.jpg"
@@ -34,12 +34,22 @@ library(readxl)
 library(tidyverse)
 ```
 
-    ## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
+    ## Warning: package 'tidyverse' was built under R version 4.0.5
 
-    ## v ggplot2 3.3.2     v purrr   0.3.4
-    ## v tibble  3.0.3     v dplyr   1.0.0
-    ## v tidyr   1.1.0     v stringr 1.4.0
-    ## v readr   1.3.1     v forcats 0.5.0
+    ## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
+
+    ## v ggplot2 3.3.5     v purrr   0.3.4
+    ## v tibble  3.1.6     v dplyr   1.0.7
+    ## v tidyr   1.1.4     v stringr 1.4.0
+    ## v readr   2.1.0     v forcats 0.5.1
+
+    ## Warning: package 'ggplot2' was built under R version 4.0.5
+
+    ## Warning: package 'tidyr' was built under R version 4.0.5
+
+    ## Warning: package 'dplyr' was built under R version 4.0.5
+
+    ## Warning: package 'forcats' was built under R version 4.0.5
 
     ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
@@ -49,6 +59,8 @@ library(tidyverse)
 library(GGally)  # here, provides pairs plot and parallel Coordinated Plot
 ```
 
+    ## Warning: package 'GGally' was built under R version 4.0.5
+
     ## Registered S3 method overwritten by 'GGally':
     ##   method from   
     ##   +.gg   ggplot2
@@ -56,6 +68,8 @@ library(GGally)  # here, provides pairs plot and parallel Coordinated Plot
 ``` r
 library(maxLik)  # Simple Maximum likelihood estimation from arbitrary
 ```
+
+    ## Warning: package 'maxLik' was built under R version 4.0.5
 
     ## Loading required package: miscTools
 
@@ -78,12 +92,14 @@ library(LCensMeans)
 # Load Data
 
 ``` r
-sibfldnm <- 'Derived_Data'
+sibfldnm <- 'Original_Data'
+niecefldnm <- 'Final_Data_Transmittal'
 parent <- dirname(getwd())
-sibling <- paste(parent,sibfldnm, sep = '/')
-fn <- 'working_data.xls'
+niece = file.path(parent,sibfldnm, niecefldnm)
 
-the.data <- read_excel(paste(sibling,fn, sep='/'), 
+fn <- "draft_Combined_data_20190917.xls"
+
+the.data <- read_excel(paste(niece, fn, sep='/'), 
     sheet = "Combined", col_types = c("skip", 
         "text", "skip", "skip", "skip", 
         "skip", "skip", "skip", "skip", 
@@ -94,18 +110,22 @@ the.data <- read_excel(paste(sibling,fn, sep='/'),
         "numeric", "numeric", "skip", "skip", 
         "skip", "skip", "skip", "skip", 
         "skip")) %>%
-  mutate(SAMPLE_ID = factor(SAMPLE_ID, levels = c("CSP-1", "CSP-2", "CSP-3", "CSP-4", "CSP-5", "CSP-6",
-                                                  "CSP-7", "CSP-7D", "CSP-8", "CSP-9", "CSP-10", "CSP-11",
-                                                  "CSP-12", "CSS-13", "CSP-14", "CSS-15")))
+  mutate(SAMPLE_ID = factor(SAMPLE_ID, levels = c("CSP-1", "CSP-2", "CSP-3", 
+                                                  "CSP-4", "CSP-5", "CSP-6",
+                                                  "CSP-7", "CSP-7D", "CSP-8", 
+                                                  "CSP-9", "CSP-10", "CSP-11",
+                                                  "CSP-12", "CSS-13", "CSP-14",
+                                                  "CSS-15")))
 ```
 
 ## List Chemical Parameters
 
 PAH Anylates are listed in a separate tab in the original Excel
-spreadsheet. Here we pull them into a vector, for later use.
+spreadsheet.  
+Here we pull them into a vector, for later use.
 
 ``` r
-pah.names <- read_excel(paste(sibling,fn, sep='/'),
+pah.names <- read_excel(paste(niece, fn, sep='/'),
                          sheet = "PAHs", skip = 3) %>%
   select(1) %>%
   slice(1:16)
@@ -141,8 +161,8 @@ duplicate samples, we calculate average values.
 
 In addition, the following reads in data and assigns the value of the
 reporting limit to data that was below that limit. Since we retain a
-flag value indicating which observation we treates this way, this does
-NOT imply that teh detection limit is the most approapriate estimate of
+flag value indicating which observation we treated this way, this does
+NOT imply that the detection limit is the most appropriate estimate of
 the (unobserved) left censored value.
 
 We handle censored values in more detail, below.
@@ -152,7 +172,8 @@ pah.data.long <- the.data %>%
   filter (the.data$PARAMETER_NAME %in% pah.names) %>%
   filter(is.na(`%_RECOVERY`)) %>%
   filter(SAMPLE_ID != 'QC') %>%
-  mutate(CONCENTRATION = ifelse(is.na(CONCENTRATION) & LAB_QUALIFIER == 'U', REPORTING_LIMIT, CONCENTRATION)) %>%
+  mutate(CONCENTRATION = ifelse(is.na(CONCENTRATION) & LAB_QUALIFIER == 'U', 
+                                REPORTING_LIMIT, CONCENTRATION)) %>%
   group_by(SAMPLE_ID, PARAMETER_NAME) %>%
   summarize(CONCENTRATION = mean(CONCENTRATION, na.rm=TRUE),
             censored = sum(LAB_QUALIFIER=='U', na.rm=TRUE)) %>%
@@ -162,16 +183,18 @@ pah.data.long <- the.data %>%
   mutate(PAH = reorder(PAH, CONCENTRATION, function(x) mean(x, na.rm=TRUE)))
 ```
 
-    ## `summarise()` regrouping output by 'SAMPLE_ID' (override with `.groups` argument)
+    ## `summarise()` has grouped output by 'SAMPLE_ID'. You can override using the `.groups` argument.
 
 ``` r
 pah.data <- pah.data.long %>%
   spread(key = PAH, value = CONCENTRATION) %>%
   rowwise() %>%
-  mutate(totpah = sum(c(ACENAPHTHENE, ACENAPHTHYLENE, `BENZ(A)ANTHRACENE`, `BENZO(A)PYRENE`,
-                      `BENZO(B)FLUORANTHENE`, `BENZO(GHI)PERYLENE`, `BENZO(K)FLUORANTHENE`,
-                      CHRYSENE, `DIBENZ(A,H)ANTHRACENE`, FLUORANTHENE, FLUORENE,
-                      `INDENO(1,2,3-CD)PYRENE`, NAPHTHALENE, PHENANTHRENE, PYRENE), na.rm = TRUE))
+  mutate(totpah = sum(c(ACENAPHTHENE, ACENAPHTHYLENE, `BENZ(A)ANTHRACENE`,
+                        `BENZO(A)PYRENE`, `BENZO(B)FLUORANTHENE`,
+                        `BENZO(GHI)PERYLENE`, `BENZO(K)FLUORANTHENE`,
+                        CHRYSENE, `DIBENZ(A,H)ANTHRACENE`, FLUORANTHENE, 
+                        FLUORENE, `INDENO(1,2,3-CD)PYRENE`, NAPHTHALENE, 
+                        PHENANTHRENE,  PYRENE), na.rm = TRUE))
 ```
 
 # Exploratory Analysis
@@ -183,10 +206,11 @@ ggpairs(log(pah.data[3:16]), progress=FALSE, na.rm=TRUE)
 ```
 
 ![](PAHs_handling_NDs_files/figure-gfm/pairsplot-1.png)<!-- -->
-Observations: 1. That shows the very high correlation among all the
-PAHs. We need to make sure that’s not due to hidden correlations of
-detection limits. 2. Distributions are not too far from lognormal,
-although still slightly skewed.
+Observations:  
+1. That shows the very high correlation among all the PAHs. We need to
+make sure that’s not due to hidden correlations of detection limits.  
+2. Distributions are not too far from lognormal, although still slightly
+skewed.
 
 ## Check for Non-detects
 
@@ -238,12 +262,15 @@ in most / all.
 ``` r
 tmp <- pah.data.long %>%
   select(-censored) %>%
-  mutate(SAMPLE_ID = fct_reorder(SAMPLE_ID, CONCENTRATION, function(x) mean(-x))) %>%
+  mutate(SAMPLE_ID = fct_reorder(SAMPLE_ID, 
+                                 CONCENTRATION, function(x) mean(-x))) %>%
   mutate(PAH = fct_reorder(PAH, CONCENTRATION, function(x) mean(-x)))
 
-plt <- ggplot(tmp, aes(x=as.numeric(SAMPLE_ID), y = CONCENTRATION, color = PAH)) +
+plt <- ggplot(tmp, aes(x=as.numeric(SAMPLE_ID), 
+                       y = CONCENTRATION, color = PAH)) +
   geom_line(lwd = 1) +
-  scale_x_continuous(breaks = c(1:16-0.25), labels = levels(tmp$SAMPLE_ID), minor_breaks = FALSE) +
+  scale_x_continuous(breaks = c(1:16-0.25), labels = levels(tmp$SAMPLE_ID), 
+                     minor_breaks = FALSE) +
   scale_y_log10() +
   xlab('Site ID') +
   ylab('Concentration (ppb)') +
@@ -267,7 +294,7 @@ knitr::kable(cor(pah.data[3:18],
 ```
 
 |                        | ACENAPHTHYLENE | DIBENZ(A,H)ANTHRACENE | NAPHTHALENE | BENZO(GHI)PERYLENE | ACENAPHTHENE | BENZO(K)FLUORANTHENE | FLUORENE | INDENO(1,2,3-CD)PYRENE | ANTHRACENE | BENZO(B)FLUORANTHENE | BENZO(A)PYRENE | CHRYSENE | BENZ(A)ANTHRACENE | PYRENE | FLUORANTHENE | PHENANTHRENE |
-| :--------------------- | -------------: | --------------------: | ----------: | -----------------: | -----------: | -------------------: | -------: | ---------------------: | ---------: | -------------------: | -------------: | -------: | ----------------: | -----: | -----------: | -----------: |
+|:-----------------------|---------------:|----------------------:|------------:|-------------------:|-------------:|---------------------:|---------:|-----------------------:|-----------:|---------------------:|---------------:|---------:|------------------:|-------:|-------------:|-------------:|
 | ACENAPHTHYLENE         |           1.00 |                  0.92 |        0.81 |               0.92 |         0.81 |                 0.90 |     0.77 |                   0.92 |       0.90 |                 0.92 |           0.92 |     0.92 |              0.90 |   0.88 |         0.85 |         0.86 |
 | DIBENZ(A,H)ANTHRACENE  |           0.92 |                  1.00 |        0.84 |               0.99 |         0.78 |                 0.98 |     0.74 |                   0.99 |       0.87 |                 0.98 |           0.99 |     0.94 |              0.94 |   0.87 |         0.87 |         0.85 |
 | NAPHTHALENE            |           0.81 |                  0.84 |        1.00 |               0.81 |         0.95 |                 0.86 |     0.94 |                   0.81 |       0.93 |                 0.87 |           0.84 |     0.92 |              0.93 |   0.94 |         0.97 |         0.94 |
@@ -288,10 +315,11 @@ knitr::kable(cor(pah.data[3:18],
 # Analysis of Non Detects
 
 Here we continue the analysis, with an explicit effort to model
-non-detects. We do this, as elsewhere, using a simple maximum likelihood
-estimation procedure to calculate an estimated distribution for each
-contaminant, and then replace the NDs with an estimate of the
-conditional mean suggested by those distributions.
+non-detects.  
+We do this, as elsewhere, using a simple maximum likelihood estimation
+procedure to calculate an estimated distribution for each contaminant,
+and then replace the NDs with an estimate of the conditional mean
+suggested by those distributions.
 
 ## Distribution Graphic showing NDs
 
@@ -317,7 +345,7 @@ We want to focus on analysis of the sum of PAHs, because all PAHs are
 highly correlated. The question is, how do we best handle the
 non-detects. Often in environmental analyses, non-detects are replaced
 by zero, by the detection limit, or by half the detection limit, but
-none of those conventions rests on strong statistical principals. We
+none of those conventions rests on strong statistical principles. We
 instead implement a method that estimates the (unobserved) value of
 non-detects using a conditional mean of censored observations derived
 from a maximum likelihood procedure.
@@ -351,7 +379,7 @@ same results, you need to set the random number seed with set.seed()
 ``` r
 dat2 <- pah.data.long %>%
   group_by(PAH) %>%
-  mutate(LikCensored = sub_conditional_means(CONCENTRATION, censored>0)) %>%
+  mutate(LikCensored = sub_cmeans(CONCENTRATION, censored>0)) %>%
   mutate(HalfDL = ifelse(censored>0, CONCENTRATION/2, CONCENTRATION)) %>%
   ungroup()
 
@@ -363,12 +391,11 @@ res2 <- dat2 %>%
             totPAH = sum(CONCENTRATION))
 ```
 
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-
 # Graphic Showing ND Handling
 
 ``` r
-ggplot(dat2, aes(CONCENTRATION,LikCensored)) + geom_line() + geom_point(aes(color = censored>0), alpha = 0.5) + 
+ggplot(dat2, aes(CONCENTRATION,LikCensored)) + geom_line() + 
+  geom_point(aes(color = censored>0), alpha = 0.5) + 
   geom_abline(intercept = 0, slope= 1, alpha = 0.5, color = 'red') + 
   scale_x_log10(labels = scales::label_number()) +
   scale_y_log10(labels = scales::label_number()) +
@@ -376,8 +403,6 @@ ggplot(dat2, aes(CONCENTRATION,LikCensored)) + geom_line() + geom_point(aes(colo
   theme_cbep(base_size=6) +
   scale_color_manual(values = cbep_colors2(), name = 'Censored') #+
 ```
-
-    ## Warning: Removed 1 rows containing missing values (geom_point).
 
 ![](PAHs_handling_NDs_files/figure-gfm/another_graphic-1.png)<!-- -->
 

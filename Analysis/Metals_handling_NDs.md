@@ -26,12 +26,22 @@ library(readxl)
 library(tidyverse)
 ```
 
-    ## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
+    ## Warning: package 'tidyverse' was built under R version 4.0.5
 
-    ## v ggplot2 3.3.3     v purrr   0.3.4
-    ## v tibble  3.0.5     v dplyr   1.0.3
-    ## v tidyr   1.1.2     v stringr 1.4.0
-    ## v readr   1.4.0     v forcats 0.5.0
+    ## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
+
+    ## v ggplot2 3.3.5     v purrr   0.3.4
+    ## v tibble  3.1.6     v dplyr   1.0.7
+    ## v tidyr   1.1.4     v stringr 1.4.0
+    ## v readr   2.1.0     v forcats 0.5.1
+
+    ## Warning: package 'ggplot2' was built under R version 4.0.5
+
+    ## Warning: package 'tidyr' was built under R version 4.0.5
+
+    ## Warning: package 'dplyr' was built under R version 4.0.5
+
+    ## Warning: package 'forcats' was built under R version 4.0.5
 
     ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
@@ -41,6 +51,8 @@ library(tidyverse)
 library(GGally)
 ```
 
+    ## Warning: package 'GGally' was built under R version 4.0.5
+
     ## Registered S3 method overwritten by 'GGally':
     ##   method from   
     ##   +.gg   ggplot2
@@ -48,6 +60,8 @@ library(GGally)
 ``` r
 library(maxLik)
 ```
+
+    ## Warning: package 'maxLik' was built under R version 4.0.5
 
     ## Loading required package: miscTools
 
@@ -244,7 +258,7 @@ fn= "Marine_Sediment_Screening_Values_simplified.xlsx"
 
 ## Convert to a look-up table
 
-Now, I convert the SQIRTS data to a look-up table, by converting the
+Now, I convert the SQuiRT data to a look-up table, by converting the
 Chemical column to row names. While this is discouraged in the
 tidyverse, it is slightly more convenient to implement a look-up this
 way. Note that all this accomplishes is to slightly simplify how I
@@ -299,6 +313,6 @@ plt <- ggplot(metals_data_long, aes(x = PARAMETER_NAME, y = CONCENTRATION)) +
 plt
 ```
 
-    ## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.
+    ## Bin width defaults to 1/30 of the range of the data. Pick better value with `binwidth`.
 
 ![](Metals_handling_NDs_files/figure-gfm/draft_dotplot-1.png)<!-- -->
